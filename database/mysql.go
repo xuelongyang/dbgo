@@ -27,6 +27,8 @@ func interaction(db *sql.DB) {
 	fmt.Println("MySQL is connected, you may begin execute your commands, input \"exit\" will quit dbgo. ^_^")
 	reader := bufio.NewReader(os.Stdin)
 	var query string
+	var commands []string
+	var commandIndex int
 	for {
 		var input string
 		var err error
@@ -41,6 +43,12 @@ func interaction(db *sql.DB) {
 		} else if len(strings.TrimSuffix(input, "\n")) == 0 {
 			continue
 		}
+		if runtime.GOOS == "windows" {
+			commands = append(commands, strings.TrimSuffix(input, "\r\n"))
+		} else if runtime.GOOS == "linux" {
+			commands = append(commands, strings.TrimSuffix(input, "\n"))
+		}
+		commandIndex += 1
 		if runtime.GOOS == "windows" && input[len(input)-3] == '\\' {
 			query += input[:len(input)-3]
 			continue
