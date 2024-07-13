@@ -12,8 +12,9 @@ download. You can run executable files directly in your environment for database
 Currently supported databases are:
 
 | Database | Version   |
-| --- |-----------|
-|MySQL| 5.7 and later |
+|----------|-----------|
+| MySQL    | 5.7 and later |
+| Oracle   | 10.2 and later |
 
 We currently support the following runtime environments:
 
@@ -39,3 +40,16 @@ Dbgo is a tool for database various relational databases.
         -P  Port number to use for connection, default value is "3306"
         -u  User for login, default value is "root"
         -p  Password to use when connecting to server.It is ciphertext input.
+2. **Oracle**
+
+   you can use the following command to connect to the database:
+   ```shell
+   dbgo -t oracle -h your_host -P your_port -u your_username -S your_service -p
+   ```
+   The following are the parameters supported by the command:
+
+        -h  Connect to host, default value is "localhost"
+        -P  Port number to use for connection, default value is "1521"
+        -S  Service name to use for connection, default value is "orcl"
+        -u  User for login, default value is "SYS"
+        -p  Password to use when connecting to server. It is ciphertext input.
