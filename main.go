@@ -2,7 +2,8 @@ package main
 
 import (
 	"dbgo/constent"
-	"dbgo/database"
+	"dbgo/database/mysql"
+	"dbgo/database/oracle"
 	"fmt"
 	"os"
 	"runtime"
@@ -21,9 +22,11 @@ const (
 func matchingDatabase(dbType string) {
 	switch dbType {
 	case MySQL:
-		database.MySQL()
+		mysql.MySQL()
+	case Oracle:
+		oracle.Oracle()
 	default:
-		fmt.Println("Database not supported")
+		fmt.Println("Database not supported, currently supported input \"mysql\" and \"oracle\"!")
 	}
 }
 
@@ -31,9 +34,11 @@ func main() {
 	args := os.Args
 	if len(args) > 2 && args[1] == "-t" {
 		matchingDatabase(args[2])
+		os.Args = append(os.Args[:1], os.Args[2:]...)
 	} else if len(args) == 2 && args[1] == "-v" {
 		fmt.Println("Dbgo version " + constent.Version + " for " + runtime.GOOS + "/" + runtime.GOARCH)
 		fmt.Println("Author: xuelongyang")
+		fmt.Println("Github: https://github.com/xuelongyang/dbgo")
 	} else {
 		fmt.Print(constent.Usage)
 	}
