@@ -1,5 +1,5 @@
 # Dbgo - The Database Command Line Interacting Tool
-![Version](https://img.shields.io/badge/version-1.1.0-orange)
+![Version](https://img.shields.io/badge/version-1.2.0-orange)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
 This is a command line tool for interacting with the Dbgo database
