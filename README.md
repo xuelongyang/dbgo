@@ -30,7 +30,7 @@ Dbgo is a tool for database various relational databases.
 
 1. **MySQL**
 
-    you can use the following command to connect to the database:
+    You can use the following command to connect to the database:
     ```shell
     dbgo -t mysql -h your_host -P your_port -u your_username -p
     ```
@@ -42,7 +42,7 @@ Dbgo is a tool for database various relational databases.
         -p  Password to use when connecting to server.It is ciphertext input.
 2. **Oracle**
 
-   you can use the following command to connect to the database:
+   You can use the following command to connect to the database:
    ```shell
    dbgo -t oracle -h your_host -P your_port -u your_username -S your_service -p
    ```
