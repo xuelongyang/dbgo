@@ -30,7 +30,7 @@ func connect() (*sql.DB, error) {
 	var password string
 	var serviceName string
 	var hasP bool
-	flag.StringVar(&dbType, "t", "", "")
+	flag.StringVar(&dbType, "t", "", "Support input \"mysql\", \"oracle\" and \"pgsql\"")
 	flag.StringVar(&username, "u", "SYS", "User for login, default value is \"SYS\"")
 	flag.IntVar(&port, "P", 1521, "Port number to use for connection, default value is \"1521\"")
 	flag.StringVar(&host, "h", "localhost", "Connect to host, default value is \"localhost\"")

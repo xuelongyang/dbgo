@@ -1,20 +1,19 @@
-package mysql
+package postgresql
 
 import (
 	"bufio"
 	"database/sql"
 	"flag"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
 	"golang.org/x/crypto/ssh/terminal"
 	"os"
 	"reflect"
 	"runtime"
-	"strconv"
 	"strings"
 )
 
-func MySQL() {
+func PostgreSQL() {
 	db, err := connect()
 	if err != nil {
 		fmt.Println(err)
@@ -23,8 +22,62 @@ func MySQL() {
 	}
 }
 
+func connect() (*sql.DB, error) {
+	var dbType string
+	var host string
+	var port int
+	var username string
+	var password string
+	var hasP bool
+	var database string
+	var sslmode string
+	flag.StringVar(&dbType, "t", "", "Support input \"mysql\", \"oracle\" and \"postgresql\"")
+	flag.StringVar(&username, "u", "postgres", "User for login, default value is \"postgres\"")
+	flag.IntVar(&port, "P", 5432, "Port number to use for connection, default value is \"5432\"")
+	flag.StringVar(&host, "h", "localhost", "Connect to host, default value is \"localhost\"")
+	flag.StringVar(&database, "d", "postgres", "The database to be used, default value is \"postgres\"")
+	flag.StringVar(&sslmode, "s", "disable", "Whether or not to use SSL, default value is \"disable\"")
+	handlePassword(&hasP)
+	if !hasP {
+		flag.StringVar(&password, "p", "", "Password to use when connecting to server")
+		fmt.Println("")
+		flag.Usage()
+		os.Exit(0)
+	}
+	flag.Parse()
+	fmt.Print("Enter password: ")
+	oldState, err := terminal.GetState(int(os.Stdin.Fd()))
+	if err != nil {
+		fmt.Println(err)
+	}
+	if _, err := terminal.MakeRaw(int(os.Stdin.Fd())); err != nil {
+		fmt.Println(err)
+	}
+	defer func(fd int, oldState *terminal.State) {
+		err := terminal.Restore(fd, oldState)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(int(os.Stdin.Fd()), oldState)
+	data, err := terminal.ReadPassword(int(os.Stdin.Fd()))
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println()
+	password = string(data)
+	db, err := sql.Open("postgres", "user="+username+" password="+password+" dbname="+database+" sslmode="+sslmode)
+	if err != nil {
+		return nil, err
+	}
+	err = db.Ping()
+	if err != nil {
+		return nil, err
+	}
+	return db, err
+}
+
 func interaction(db *sql.DB) {
-	fmt.Println("MySQL is connected, you may begin execute your commands, input \"exit\" will quit dbgo. ^_^")
+	fmt.Println("PostgreSQL is connected, you may begin execute your commands, input \"exit\" will quit dbgo. ^_^")
 	reader := bufio.NewReader(os.Stdin)
 	var query string
 	var commands []string
@@ -32,7 +85,7 @@ func interaction(db *sql.DB) {
 	for {
 		var input string
 		var err error
-		fmt.Print("mysql> ")
+		fmt.Print("pgsql> ")
 		input, err = reader.ReadString('\n')
 		if err != nil {
 			fmt.Println("Error reading input:", err)
@@ -120,56 +173,6 @@ func interaction(db *sql.DB) {
 			fmt.Println()
 		}
 	}
-}
-
-func connect() (*sql.DB, error) {
-	var dbType string
-	var host string
-	var port uint64
-	var username string
-	var password string
-	var hasP bool
-	flag.StringVar(&dbType, "t", "", "Support input \"mysql\", \"oracle\" and \"pgsql\"")
-	flag.StringVar(&username, "u", "root", "User for login, default value is \"root\"")
-	flag.Uint64Var(&port, "P", 3306, "Port number to use for connection, default value is \"3306\"")
-	flag.StringVar(&host, "h", "localhost", "Connect to host, default value is \"localhost\"")
-	handlePassword(&hasP)
-	if !hasP {
-		flag.StringVar(&password, "p", "", "Password to use when connecting to server")
-		fmt.Println("")
-		flag.Usage()
-		os.Exit(0)
-	}
-	flag.Parse()
-	fmt.Print("Enter password: ")
-	oldState, err := terminal.GetState(int(os.Stdin.Fd()))
-	if err != nil {
-		fmt.Println(err)
-	}
-	if _, err := terminal.MakeRaw(int(os.Stdin.Fd())); err != nil {
-		fmt.Println(err)
-	}
-	defer func(fd int, oldState *terminal.State) {
-		err := terminal.Restore(fd, oldState)
-		if err != nil {
-			fmt.Println(err)
-		}
-	}(int(os.Stdin.Fd()), oldState)
-	data, err := terminal.ReadPassword(int(os.Stdin.Fd()))
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println()
-	password = string(data)
-	db, err := sql.Open("mysql", username+":"+password+"@tcp("+host+":"+strconv.FormatUint(port, 10)+")/")
-	if err != nil {
-		return nil, err
-	}
-	err = db.Ping()
-	if err != nil {
-		return nil, err
-	}
-	return db, err
 }
 
 func handlePassword(hasP *bool) {

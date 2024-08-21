@@ -4,6 +4,7 @@ import (
 	"dbgo/constent"
 	"dbgo/database/mysql"
 	"dbgo/database/oracle"
+	"dbgo/database/postgresql"
 	"fmt"
 	"os"
 	"runtime"
@@ -12,8 +13,8 @@ import (
 // Database Client will support following databases.
 const (
 	MySQL      = "mysql"      // supported
-	Oracle     = "oracle"     // in the future
-	PostgreSQL = "postgresql" // in the future
+	Oracle     = "oracle"     // supported
+	PostgreSQL = "postgresql" // supported
 	SqlServer  = "sqlserver"  // in the future
 	Sqlite     = "sqlite"     // in the future
 )
@@ -25,8 +26,10 @@ func matchingDatabase(dbType string) {
 		mysql.MySQL()
 	case Oracle:
 		oracle.Oracle()
+	case PostgreSQL:
+		postgresql.PostgreSQL()
 	default:
-		fmt.Println("Database not supported, currently supported input \"mysql\" and \"oracle\"!")
+		fmt.Println("Database not supported, currently supported input \"MySQL\", \"Oracle\" and \"PostgreSQL\"!")
 	}
 }
 
